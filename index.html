@@ -1,0 +1,1314 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#37474f">
+<title>ماشین‌یار</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body {
+    font-family: 'Vazirmatn', Tahoma, 'Segoe UI', sans-serif;
+    background: #eceff1;
+    color: #263238;
+    padding-bottom: 100px;
+    min-height: 100vh;
+  }
+  header {
+    background: #37474f;
+    color: #fff;
+    padding: 16px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  header h1 { font-size: 20px; font-weight: 600; }
+  header p { font-size: 12px; opacity: 0.8; margin-top: 4px; }
+
+  .container { padding: 16px; }
+
+  .empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: #78909c;
+  }
+  .empty .icon { font-size: 70px; margin-bottom: 16px; }
+  .empty h3 { font-size: 17px; margin-bottom: 8px; color: #546e7a; }
+  .empty p { font-size: 14px; }
+
+  .perm-banner {
+    background: #fff8e1;
+    border-right: 4px solid #ffa000;
+    padding: 12px 14px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    color: #6d4c00;
+  }
+  .perm-banner button {
+    margin-right: auto;
+    background: #ffa000;
+    color: #fff;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 16px;
+    font-size: 12px;
+    font-family: inherit;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .perm-banner.granted {
+    background: #e8f5e9;
+    border-right-color: #4caf50;
+    color: #2e7d32;
+  }
+
+  .car-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 12px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+  }
+  .car-card:active { transform: scale(0.98); }
+  .car-card .avatar {
+    background: #37474f;
+    color: #fff;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    flex-shrink: 0;
+  }
+  .car-card .info { flex: 1; }
+  .car-card .info h4 { font-size: 16px; margin-bottom: 4px; }
+  .car-card .info span { font-size: 13px; color: #78909c; display: block; }
+  .car-card .alert-count {
+    background: #f44336;
+    color: #fff;
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-weight: 600;
+  }
+  .car-card .arrow { color: #b0bec5; font-size: 22px; }
+
+  .fab {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    background: #37474f;
+    color: #fff;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: none;
+    font-size: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    cursor: pointer;
+    z-index: 50;
+  }
+  .fab:active { transform: scale(0.92); }
+
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    display: none;
+    align-items: flex-end;
+    justify-content: center;
+    z-index: 100;
+  }
+  .modal-overlay.active { display: flex; }
+
+  .modal {
+    background: #fff;
+    width: 100%;
+    max-width: 500px;
+    border-radius: 20px 20px 0 0;
+    padding: 20px;
+    max-height: 92vh;
+    overflow-y: auto;
+    animation: slideUp 0.25s ease;
+  }
+  @keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+
+  .modal h2 {
+    font-size: 18px;
+    margin-bottom: 16px;
+    color: #37474f;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .modal h2 .close {
+    background: none;
+    border: none;
+    font-size: 26px;
+    color: #90a4ae;
+    cursor: pointer;
+    line-height: 1;
+  }
+
+  .field { margin-bottom: 14px; }
+  .field label {
+    display: block;
+    font-size: 13px;
+    color: #546e7a;
+    margin-bottom: 6px;
+    font-weight: 500;
+  }
+  .field input, .field select, .field textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #cfd8dc;
+    border-radius: 8px;
+    font-size: 15px;
+    font-family: inherit;
+    background: #fafafa;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus {
+    outline: none;
+    border-color: #37474f;
+    background: #fff;
+  }
+  .field .hint { font-size: 11px; color: #90a4ae; margin-top: 4px; }
+
+  .radio-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .radio-row label {
+    flex: 1;
+    padding: 10px;
+    background: #f5f5f5;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.15s;
+    color: #546e7a;
+  }
+  .radio-row input { display: none; }
+  .radio-row input:checked + label,
+  .radio-row label.active {
+    background: #37474f;
+    color: #fff;
+    border-color: #37474f;
+  }
+
+  .btn {
+    width: 100%;
+    padding: 14px;
+    background: #37474f;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-family: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 8px;
+  }
+  .btn:active { background: #263238; }
+  .btn.secondary { background: #eceff1; color: #37474f; }
+  .btn.danger { background: #ffebee; color: #c62828; }
+  .btn.orange { background: #ff9800; }
+  .btn.small { padding: 10px; font-size: 13px; }
+
+  .btn-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .btn-row .btn { margin-top: 0; flex: 1; }
+
+  .detail-km {
+    background: linear-gradient(135deg, #37474f, #546e7a);
+    color: #fff;
+    border-radius: 14px;
+    padding: 20px;
+    text-align: center;
+    margin-bottom: 16px;
+  }
+  .detail-km .lbl { font-size: 13px; opacity: 0.85; margin-bottom: 6px; }
+  .detail-km .num { font-size: 32px; font-weight: 700; }
+  .detail-km button {
+    margin-top: 14px;
+    padding: 8px 20px;
+    background: rgba(255,255,255,0.2);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.4);
+    border-radius: 20px;
+    font-size: 13px;
+    font-family: inherit;
+    cursor: pointer;
+  }
+
+  .stats-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .stat-box {
+    flex: 1;
+    background: #fff;
+    border-radius: 10px;
+    padding: 12px;
+    text-align: center;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+  .stat-box .v { font-size: 16px; font-weight: 700; color: #37474f; }
+  .stat-box .l { font-size: 11px; color: #90a4ae; margin-top: 4px; }
+  .stat-box.passed .v { color: #f44336; }
+  .stat-box.soon .v { color: #ff9800; }
+  .stat-box.cost .v { color: #2e7d32; }
+
+  .section-title {
+    font-size: 15px;
+    font-weight: 600;
+    margin: 20px 0 10px;
+    color: #37474f;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .section-title .count {
+    font-size: 12px;
+    background: #eceff1;
+    padding: 2px 10px;
+    border-radius: 10px;
+    color: #546e7a;
+  }
+
+  .reminder {
+    background: #fff;
+    border-radius: 10px;
+    padding: 14px;
+    margin-bottom: 10px;
+    border-right: 4px solid #4caf50;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .reminder.soon { border-right-color: #ff9800; }
+  .reminder.passed { border-right-color: #f44336; }
+
+  .reminder .r-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #e8f5e9;
+    color: #4caf50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .reminder.soon .r-icon { background: #fff3e0; color: #ff9800; }
+  .reminder.passed .r-icon { background: #ffebee; color: #f44336; }
+
+  .reminder .r-body { flex: 1; }
+  .reminder .r-body h5 { font-size: 14px; margin-bottom: 6px; }
+  .reminder .r-body p { font-size: 12px; color: #78909c; margin-bottom: 3px; }
+  .reminder .r-body .cost {
+    font-size: 13px;
+    color: #2e7d32;
+    font-weight: 600;
+    margin-top: 4px;
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+    margin-top: 6px;
+  }
+  .badge.ok { background: #e8f5e9; color: #2e7d32; }
+  .badge.soon { background: #fff3e0; color: #e65100; }
+  .badge.passed { background: #ffebee; color: #c62828; }
+
+  .reminder .r-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .reminder .r-actions button {
+    background: #f5f5f5;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    font-size: 14px;
+    cursor: pointer;
+    color: #546e7a;
+  }
+  .reminder .r-actions button.done { color: #4caf50; }
+  .reminder .r-actions button.del { color: #f44336; }
+
+  .empty-reminders {
+    text-align: center;
+    padding: 28px;
+    color: #90a4ae;
+    font-size: 14px;
+    background: #fafafa;
+    border-radius: 10px;
+    border: 1px dashed #cfd8dc;
+  }
+
+  .toast {
+    position: fixed;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: #263238;
+    color: #fff;
+    padding: 12px 24px;
+    border-radius: 24px;
+    font-size: 14px;
+    opacity: 0;
+    transition: all 0.3s;
+    z-index: 200;
+    pointer-events: none;
+    max-width: 90%;
+    text-align: center;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* گزارش */
+  .report-header {
+    background: #fff;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+  .report-header h3 { font-size: 16px; margin-bottom: 12px; color: #37474f; }
+  .date-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .date-row .field { flex: 1; margin-bottom: 0; }
+
+  .invoice {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    margin-bottom: 16px;
+  }
+  .invoice-head {
+    text-align: center;
+    border-bottom: 2px dashed #cfd8dc;
+    padding-bottom: 14px;
+    margin-bottom: 14px;
+  }
+  .invoice-head h2 { font-size: 18px; color: #37474f; margin-bottom: 4px; }
+  .invoice-head p { font-size: 12px; color: #90a4ae; }
+
+  .invoice-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    margin-bottom: 14px;
+    padding: 10px;
+    background: #fafafa;
+    border-radius: 8px;
+  }
+  .invoice-info div { text-align: center; flex: 1; }
+  .invoice-info .lbl { color: #90a4ae; font-size: 11px; margin-bottom: 4px; }
+  .invoice-info .val { font-weight: 600; color: #37474f; }
+
+  .invoice-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin-bottom: 14px;
+  }
+  .invoice-table th {
+    background: #37474f;
+    color: #fff;
+    padding: 8px;
+    text-align: right;
+    font-weight: 500;
+    font-size: 12px;
+  }
+  .invoice-table td {
+    padding: 8px;
+    border-bottom: 1px solid #eceff1;
+  }
+  .invoice-table tr:last-child td { border-bottom: none; }
+  .invoice-table .num { font-variant-numeric: tabular-nums; }
+
+  .invoice-total {
+    background: #e8f5e9;
+    border-radius: 8px;
+    padding: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 700;
+    color: #2e7d32;
+    font-size: 15px;
+  }
+
+  .invoice-empty {
+    text-align: center;
+    padding: 30px;
+    color: #90a4ae;
+    font-size: 14px;
+  }
+
+  @media print {
+    body { background: #fff; padding: 0; }
+    header, .fab, .btn, .perm-banner, .date-row .field, .report-header h3 ~ *:not(.invoice) { display: none !important; }
+    .container { padding: 0; }
+    .invoice { box-shadow: none; border-radius: 0; padding: 0; }
+    .no-print { display: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🚗 ماشین‌یار</h1>
+  <p>یادآور هوشمند تعمیر و نگهداری خودرو</p>
+</header>
+
+<div class="container" id="app"></div>
+
+<button class="fab" id="fab" onclick="openAddCar()">+</button>
+
+<div class="modal-overlay" id="overlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal" id="modal"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ==================== تبدیل تاریخ شمسی ====================
+// الگوریتم تبدیل شمسی <-> میلادی
+function jalaliToGregorian(jy, jm, jd) {
+  jy += 1595;
+  let days = -355668 + (365 * jy) + (~~(jy / 33) * 8) + ~~(((jy % 33) + 3) / 4) + jd + ((jm < 7) ? (jm - 1) * 31 : ((jm - 7) * 30) + 186);
+  let gy = 400 * ~~(days / 146097);
+  days %= 146097;
+  if (days > 36524) {
+    gy += 100 * ~~(--days / 36524);
+    days %= 36524;
+    if (days >= 365) days++;
+  }
+  gy += 4 * ~~(days / 1461);
+  days %= 1461;
+  if (days > 365) {
+    gy += ~~((days - 1) / 365);
+    days = (days - 1) % 365;
+  }
+  let gd = days + 1;
+  const sal_a = [0, 31, ((gy % 4 === 0 && gy % 100 !== 0) || (gy % 400 === 0)) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+  let gm;
+  for (gm = 0; gm < 13 && gd > sal_a[gm]; gm++) gd -= sal_a[gm];
+  return [gy, gm, gd];
+}
+
+function gregorianToJalali(gy, gm, gd) {
+  const g_d_m = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
+  let jy = (gy <= 1600) ? 0 : 979;
+  gy -= (gy <= 1600) ? 621 : 1600;
+  const gy2 = (gm > 2) ? (gy + 1) : gy;
+  let days = (365 * gy) + ~~((gy2 + 3) / 4) - ~~((gy2 + 99) / 100) + ~~((gy2 + 399) / 400) - 80 + gd + g_d_m[gm - 1];
+  jy += 33 * ~~(days / 12053);
+  days %= 12053;
+  jy += 4 * ~~(days / 1461);
+  days %= 1461;
+  if (days > 365) {
+    jy += ~~((days - 1) / 365);
+    days = (days - 1) % 365;
+  }
+  const jm = (days < 186) ? 1 + ~~(days / 31) : 7 + ~~((days - 186) / 30);
+  const jd = 1 + ((days < 186) ? (days % 31) : ((days - 186) % 30));
+  return [jy, jm, jd];
+}
+
+function toJalaliString(date) {
+  const d = new Date(date);
+  const [jy, jm, jd] = gregorianToJalali(d.getFullYear(), d.getMonth() + 1, d.getDate());
+  return `${jy}/${String(jm).padStart(2, '0')}/${String(jd).padStart(2, '0')}`;
+}
+
+function jalaliToDate(jStr) {
+  const parts = jStr.split('/').map(s => parseInt(s.trim()));
+  if (parts.length !== 3 || parts.some(isNaN)) return null;
+  const [gy, gm, gd] = jalaliToGregorian(parts[0], parts[1], parts[2]);
+  return new Date(gy, gm - 1, gd);
+}
+
+function todayJalali() {
+  return toJalaliString(new Date());
+}
+
+// ==================== دیتابیس محلی ====================
+const DB = {
+  getCars() { return JSON.parse(localStorage.getItem('cars') || '[]'); },
+  saveCars(c) { localStorage.setItem('cars', JSON.stringify(c)); },
+  getAllReminders() { return JSON.parse(localStorage.getItem('reminders') || '[]'); },
+  saveAllReminders(r) { localStorage.setItem('reminders', JSON.stringify(r)); },
+  getReminders(carId) { return this.getAllReminders().filter(r => r.carId === carId); },
+  addCar(car) {
+    const cars = this.getCars();
+    car.id = Date.now();
+    cars.push(car);
+    this.saveCars(cars);
+    return car;
+  },
+  updateCar(u) {
+    const cars = this.getCars();
+    const i = cars.findIndex(c => c.id === u.id);
+    if (i > -1) cars[i] = u;
+    this.saveCars(cars);
+  },
+  deleteCar(id) {
+    this.saveCars(this.getCars().filter(c => c.id !== id));
+    this.saveAllReminders(this.getAllReminders().filter(r => r.carId !== id));
+  },
+  addReminder(r) {
+    const all = this.getAllReminders();
+    r.id = Date.now();
+    all.push(r);
+    this.saveAllReminders(all);
+    return r;
+  },
+  updateReminder(u) {
+    const all = this.getAllReminders();
+    const i = all.findIndex(r => r.id === u.id);
+    if (i > -1) all[i] = u;
+    this.saveAllReminders(all);
+  },
+  deleteReminder(id) {
+    this.saveAllReminders(this.getAllReminders().filter(r => r.id !== id));
+  }
+};
+
+// ==================== ابزارها ====================
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+function faNum(n) {
+  if (n === null || n === undefined || n === '') return '-';
+  return Number(n).toLocaleString('fa-IR');
+}
+
+function money(n) {
+  if (!n || n === 0) return '-';
+  return Number(n).toLocaleString('fa-IR') + ' تومان';
+}
+
+function daysFromNow(jalaliStr) {
+  const d = jalaliToDate(jalaliStr);
+  if (!d) return null;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return Math.round((d - today) / 86400000);
+}
+
+// ==================== محاسبه وضعیت ====================
+function getStatus(reminder, currentKm) {
+  let kmLeft = null, daysLeft = null;
+  if (reminder.nextDueKm) kmLeft = reminder.nextDueKm - currentKm;
+  if (reminder.nextDueDate) daysLeft = daysFromNow(reminder.nextDueDate);
+
+  if ((kmLeft !== null && kmLeft < 0) || (daysLeft !== null && daysLeft < 0)) {
+    return 'passed';
+  }
+  if ((kmLeft !== null && kmLeft < 500) || (daysLeft !== null && daysLeft <= 14)) {
+    return 'soon';
+  }
+  return 'ok';
+}
+
+// ==================== ناوبری ====================
+let currentCarId = null;
+let currentView = 'home'; // 'home' | 'detail' | 'report'
+
+function render() {
+  const fab = document.getElementById('fab');
+  if (currentView === 'report') {
+    fab.style.display = 'none';
+  } else {
+    fab.style.display = 'flex';
+  }
+  if (currentView === 'detail' && currentCarId) renderCarDetail(currentCarId);
+  else if (currentView === 'report') renderReport();
+  else renderHome();
+}
+
+// ==================== صفحه اصلی ====================
+function renderHome() {
+  const cars = DB.getCars();
+  const app = document.getElementById('app');
+  const permBanner = renderPermBanner();
+
+  if (cars.length === 0) {
+    app.innerHTML = permBanner + `
+      <div class="empty">
+        <div class="icon">🚗</div>
+        <h3>هنوز ماشینی اضافه نکردی</h3>
+        <p>با دکمه + پایین صفحه شروع کن</p>
+      </div>
+    `;
+    return;
+  }
+
+  app.innerHTML = permBanner + cars.map(car => {
+    const reminders = DB.getReminders(car.id);
+    const alerts = reminders.filter(r => getStatus(r, car.currentKm) !== 'ok').length;
+    return `
+      <div class="car-card" onclick="openCar(${car.id})">
+        <div class="avatar">🚗</div>
+        <div class="info">
+          <h4>${car.name}</h4>
+          <span>سال ${car.year} • ${faNum(car.currentKm)} کیلومتر</span>
+          ${car.plate ? `<span>${car.plate}</span>` : ''}
+        </div>
+        ${alerts > 0 ? `<div class="alert-count">${alerts} هشدار</div>` : ''}
+        <div class="arrow">‹</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderPermBanner() {
+  if (!('Notification' in window)) return '';
+  if (Notification.permission === 'granted') {
+    return `<div class="perm-banner granted">✅ نوتیفیکیشن فعاله</div>`;
+  }
+  if (Notification.permission === 'denied') {
+    return `<div class="perm-banner">⚠ نوتیفیکیشن رد شده. از تنظیمات مرورگر اجازه بده.</div>`;
+  }
+  return `
+    <div class="perm-banner">
+      <span>🔔 برای دریافت یادآورها، اجازه بده</span>
+      <button onclick="askNotification()">فعال کن</button>
+    </div>
+  `;
+}
+
+async function askNotification() {
+  if (!('Notification' in window)) { toast('مرورگرت پشتیبانی نمی‌کنه'); return; }
+  const perm = await Notification.requestPermission();
+  if (perm === 'granted') {
+    toast('نوتیفیکیشن فعال شد ✅');
+    new Notification('ماشین‌یار', { body: 'یادآورها از این به بعد بهت اطلاع می‌دن' });
+  } else toast('اجازه داده نشد');
+  render();
+}
+
+// ==================== صفحه جزئیات ماشین ====================
+function openCar(id) { currentCarId = id; currentView = 'detail'; render(); }
+function backHome() { currentCarId = null; currentView = 'home'; render(); }
+
+function renderCarDetail(id) {
+  const car = DB.getCars().find(c => c.id === id);
+  if (!car) { backHome(); return; }
+
+  const reminders = DB.getReminders(id);
+  const sorted = [...reminders].sort((a, b) => {
+    const order = { passed: 0, soon: 1, ok: 2 };
+    return order[getStatus(a, car.currentKm)] - order[getStatus(b, car.currentKm)];
+  });
+
+  const alertCount = reminders.filter(r => getStatus(r, car.currentKm) !== 'ok').length;
+  const totalCost = reminders.reduce((s, r) => s + (r.cost || 0), 0);
+
+  document.getElementById('app').innerHTML = `
+    <div class="detail-km">
+      <div class="lbl">کیلومتر فعلی</div>
+      <div class="num">${faNum(car.currentKm)}</div>
+      <button onclick="openUpdateKm(${car.id})">✏️ به‌روزرسانی کیلومتر</button>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-box passed">
+        <div class="v">${reminders.filter(r => getStatus(r, car.currentKm) === 'passed').length}</div>
+        <div class="l">عقب‌افتاده</div>
+      </div>
+      <div class="stat-box soon">
+        <div class="v">${reminders.filter(r => getStatus(r, car.currentKm) === 'soon').length}</div>
+        <div class="l">نزدیک</div>
+      </div>
+      <div class="stat-box cost">
+        <div class="v">${faNum(totalCost)}</div>
+        <div class="l">جمع هزینه (تومان)</div>
+      </div>
+    </div>
+
+    <div class="section-title">
+      <span>🔧 سرویس‌ها</span>
+      ${alertCount > 0 ? `<span class="count" style="background:#ffebee;color:#c62828;">${alertCount} هشدار</span>` : `<span class="count">${reminders.length} مورد</span>`}
+    </div>
+
+    ${sorted.length === 0 ? `
+      <div class="empty-reminders">هنوز سرویسی ثبت نشده</div>
+    ` : sorted.map(r => {
+      const status = getStatus(r, car.currentKm);
+      const statusFa = { ok: 'سالم', soon: 'نزدیک به موعد', passed: 'عقب‌افتاده' };
+      const kmLeft = r.nextDueKm ? r.nextDueKm - car.currentKm : null;
+      const daysLeft = r.nextDueDate ? daysFromNow(r.nextDueDate) : null;
+
+      let detail = '';
+      if (r.nextDueKm) {
+        detail += `<p>موعد کیلومتری: ${faNum(r.nextDueKm)}`;
+        if (kmLeft !== null) {
+          detail += kmLeft >= 0
+            ? ` (${faNum(kmLeft)} کیلومتر مانده)`
+            : ` (${faNum(Math.abs(kmLeft))} کیلومتر گذشته)`;
+        }
+        detail += `</p>`;
+      }
+      if (r.nextDueDate) {
+        detail += `<p>موعد تاریخی: ${r.nextDueDate}`;
+        if (daysLeft !== null) {
+          detail += daysLeft >= 0
+            ? ` (${faNum(daysLeft)} روز مانده)`
+            : ` (${faNum(Math.abs(daysLeft))} روز گذشته)`;
+        }
+        detail += `</p>`;
+      }
+      if (r.lastServiceDate) {
+        detail += `<p>آخرین سرویس: ${r.lastServiceDate} در ${faNum(r.lastServiceKm)} کیلومتر</p>`;
+      }
+      if (r.cost) {
+        detail += `<div class="cost">💰 ${money(r.cost)}</div>`;
+      }
+      if (r.note) {
+        detail += `<p style="font-style:italic;">📝 ${r.note}</p>`;
+      }
+
+      return `
+        <div class="reminder ${status}">
+          <div class="r-icon">🔧</div>
+          <div class="r-body">
+            <h5>${r.title}</h5>
+            ${detail}
+            <span class="badge ${status}">${statusFa[status]}</span>
+          </div>
+          <div class="r-actions">
+            <button class="done" title="انجام شد" onclick="markDone(${r.id})">✓</button>
+            <button class="del" title="حذف" onclick="deleteReminder(${r.id})">🗑</button>
+          </div>
+        </div>
+      `;
+    }).join('')}
+
+    <button class="btn" style="margin-top:16px;" onclick="openAddReminder(${car.id})">
+      ➕ افزودن سرویس جدید
+    </button>
+    <div class="btn-row">
+      <button class="btn secondary" onclick="backHome()">بازگشت</button>
+      <button class="btn orange" onclick="openReport(${car.id})">📊 گزارش</button>
+    </div>
+    <button class="btn danger" onclick="confirmDeleteCar(${car.id})">حذف ماشین</button>
+  `;
+}
+
+// ==================== مودال‌ها ====================
+function openModal(html) {
+  document.getElementById('modal').innerHTML = html;
+  document.getElementById('overlay').classList.add('active');
+}
+function closeModal() {
+  document.getElementById('overlay').classList.remove('active');
+}
+
+// --- افزودن ماشین ---
+function openAddCar() {
+  openModal(`
+    <h2>افزودن خودرو <button class="close" onclick="closeModal()">×</button></h2>
+    <div class="field">
+      <label>مدل خودرو</label>
+      <input id="carName" placeholder="مثلا پژو ۲۰۶">
+    </div>
+    <div class="field">
+      <label>سال ساخت</label>
+      <input id="carYear" type="number" placeholder="مثلا ۱۳۹۸">
+    </div>
+    <div class="field">
+      <label>کیلومتر فعلی</label>
+      <input id="carKm" type="number" placeholder="مثلا ۸۵۰۰۰">
+    </div>
+    <div class="field">
+      <label>شماره پلاک (اختیاری)</label>
+      <input id="carPlate" placeholder="۱۲ ب ۳۴۵ ایران ۷۸">
+    </div>
+    <button class="btn" onclick="saveCar()">ذخیره</button>
+  `);
+}
+
+function saveCar() {
+  const name = document.getElementById('carName').value.trim();
+  const year = document.getElementById('carYear').value.trim();
+  const km = document.getElementById('carKm').value.trim();
+  const plate = document.getElementById('carPlate').value.trim();
+
+  if (!name || !year || !km) { toast('مدل، سال و کیلومتر الزامی‌اند'); return; }
+  if (parseInt(km) < 0) { toast('کیلومتر نامعتبر'); return; }
+
+  DB.addCar({ name, year: parseInt(year), currentKm: parseInt(km), plate: plate || null });
+  closeModal();
+  render();
+  toast('خودرو ذخیره شد ✅');
+}
+
+// --- به‌روزرسانی کیلومتر ---
+function openUpdateKm(id) {
+  const car = DB.getCars().find(c => c.id === id);
+  openModal(`
+    <h2>به‌روزرسانی کیلومتر <button class="close" onclick="closeModal()">×</button></h2>
+    <div class="field">
+      <label>کیلومتر جدید</label>
+      <input id="newKm" type="number" value="${car.currentKm}">
+    </div>
+    <button class="btn" onclick="saveKm(${id})">ذخیره</button>
+  `);
+}
+
+function saveKm(id) {
+  const km = parseInt(document.getElementById('newKm').value);
+  if (isNaN(km) || km < 0) { toast('عدد معتبر وارد کن'); return; }
+  const car = DB.getCars().find(c => c.id === id);
+  car.currentKm = km;
+  DB.updateCar(car);
+  checkRemindersForCar(car);
+  closeModal();
+  render();
+  toast('کیلومتر به‌روز شد ✅');
+}
+
+// --- افزودن سرویس ---
+let addReminderType = 'km';
+function setReminderType(t) {
+  addReminderType = t;
+  document.querySelectorAll('.radio-row label').forEach(l => l.classList.remove('active'));
+  document.getElementById('type-' + t).classList.add('active');
+  document.getElementById('kmField').style.display = t === 'km' ? 'block' : 'none';
+  document.getElementById('dateField').style.display = t === 'date' ? 'block' : 'none';
+}
+
+function openAddReminder(carId) {
+  addReminderType = 'km';
+  openModal(`
+    <h2>سرویس جدید <button class="close" onclick="closeModal()">×</button></h2>
+    <div class="field">
+      <label>عنوان سرویس</label>
+      <input id="rTitle" placeholder="مثلا تعویض تسمه تایم">
+    </div>
+    <div class="field">
+      <label>نوع بازه</label>
+      <div class="radio-row">
+        <input type="radio" name="rtype" id="type-km" checked>
+        <label for="type-km" id="lbl-km" class="active" onclick="setReminderType('km')">کیلومتری</label>
+        <input type="radio" name="rtype" id="type-date">
+        <label for="type-date" id="lbl-date" onclick="setReminderType('date')">تاریخی</label>
+      </div>
+    </div>
+    <div class="field" id="kmField">
+      <label>هر چند کیلومتر؟</label>
+      <input id="rKm" type="number" placeholder="مثلا ۵۰۰۰">
+    </div>
+    <div class="field" id="dateField" style="display:none;">
+      <label>موعد بعدی (تاریخ شمسی)</label>
+      <input id="rDate" placeholder="مثلا ۱۴۰۷/۰۷/۱۱" value="${todayJalali()}">
+      <div class="hint">فرمت: سال/ماه/روز — مثلا ۱۴۰۷/۰۷/۱۱</div>
+    </div>
+    <div class="field">
+      <label>هزینه (تومان) — اختیاری</label>
+      <input id="rCost" type="number" placeholder="مثلا ۸۵۰۰۰۰">
+    </div>
+    <div class="field">
+      <label>یادداشت (اختیاری)</label>
+      <textarea id="rNote" rows="2" placeholder="مثلا تعویض تسمه تایم و تسمه دینام"></textarea>
+    </div>
+    <button class="btn" onclick="saveReminder(${carId})">ذخیره سرویس</button>
+  `);
+}
+
+function saveReminder(carId) {
+  const title = document.getElementById('rTitle').value.trim();
+  if (!title) { toast('عنوان را وارد کن'); return; }
+
+  const car = DB.getCars().find(c => c.id === carId);
+  const cost = parseInt(document.getElementById('rCost').value) || 0;
+  const note = document.getElementById('rNote').value.trim();
+  const today = todayJalali();
+
+  let newRem = {
+    carId,
+    title,
+    cost,
+    note: note || null,
+    lastServiceKm: car.currentKm,
+    lastServiceDate: today,
+    createdAt: new Date().toISOString()
+  };
+
+  if (addReminderType === 'km') {
+    const kmInt = parseInt(document.getElementById('rKm').value);
+    if (!kmInt || kmInt <= 0) { toast('بازه کیلومتری معتبر وارد کن'); return; }
+    newRem.intervalKm = kmInt;
+    newRem.nextDueKm = car.currentKm + kmInt;
+    newRem.nextDueDate = null;
+  } else {
+    const dateStr = document.getElementById('rDate').value.trim();
+    if (!jalaliToDate(dateStr)) { toast('تاریخ شمسی معتبر وارد کن (مثل ۱۴۰۷/۰۷/۱۱)'); return; }
+    newRem.nextDueDate = dateStr;
+    newRem.nextDueKm = null;
+  }
+
+  DB.addReminder(newRem);
+  closeModal();
+  render();
+  toast('سرویس ذخیره شد ✅');
+}
+
+// --- انجام شد (سرویس انجام شد، بازه بعدی محاسبه شود) ---
+function markDone(reminderId) {
+  const all = DB.getAllReminders();
+  const r = all.find(x => x.id === reminderId);
+  if (!r) return;
+
+  const car = DB.getCars().find(c => c.id === r.carId);
+  if (!car) return;
+
+  openModal(`
+    <h2>ثبت انجام سرویس <button class="close" onclick="closeModal()">×</button></h2>
+    <p style="font-size:14px;color:#546e7a;margin-bottom:14px;">سرویس «${r.title}» انجام شد. اطلاعات زیر را تکمیل کن:</p>
+    <div class="field">
+      <label>هزینه این بار (تومان)</label>
+      <input id="doneCost" type="number" placeholder="مثلا ۸۵۰۰۰۰" value="${r.cost || ''}">
+    </div>
+    <div class="field">
+      <label>تاریخ انجام (شمسی)</label>
+      <input id="doneDate" value="${todayJalali()}">
+    </div>
+    <div class="field">
+      <label>یادداشت</label>
+      <textarea id="doneNote" rows="2" placeholder="مثلا روغن ۵W30 استفاده شد">${r.note || ''}</textarea>
+    </div>
+    <button class="btn" onclick="confirmMarkDone(${reminderId})">ثبت انجام</button>
+  `);
+}
+
+function confirmMarkDone(reminderId) {
+  const all = DB.getAllReminders();
+  const r = all.find(x => x.id === reminderId);
+  if (!r) return;
+
+  const car = DB.getCars().find(c => c.id === r.carId);
+  const cost = parseInt(document.getElementById('doneCost').value) || 0;
+  const date = document.getElementById('doneDate').value.trim();
+  const note = document.getElementById('doneNote').value.trim();
+
+  if (!jalaliToDate(date)) { toast('تاریخ معتبر وارد کن'); return; }
+
+  r.cost = cost;
+  r.note = note || null;
+  r.lastServiceKm = car.currentKm;
+  r.lastServiceDate = date;
+  r.history = r.history || [];
+  r.history.push({
+    date,
+    km: car.currentKm,
+    cost,
+    note: note || null
+  });
+
+  if (r.intervalKm) {
+    r.nextDueKm = car.currentKm + r.intervalKm;
+  }
+  if (r.nextDueDate) {
+    // تاریخ بعدی بر اساس بازه قبلی محاسبه نمیشه چون کاربر خودش تاریخ داده
+    // پس فقط تاریخ انجام رو ثبت می‌کنیم
+  }
+
+  DB.updateReminder(r);
+  closeModal();
+  render();
+  toast('سرویس ثبت شد ✅');
+}
+
+function deleteReminder(id) {
+  if (!confirm('این سرویس حذف شود؟')) return;
+  DB.deleteReminder(id);
+  render();
+  toast('سرویس حذف شد');
+}
+
+// --- حذف ماشین ---
+function confirmDeleteCar(id) {
+  if (confirm('این خودرو و همه سرویس‌هاش حذف شوند؟')) {
+    DB.deleteCar(id);
+    backHome();
+    toast('خودرو حذف شد');
+  }
+}
+
+// ==================== گزارش‌گیری ====================
+let reportCarId = null;
+
+function openReport(carId) {
+  reportCarId = carId;
+  currentView = 'report';
+  render();
+}
+
+function renderReport() {
+  const car = DB.getCars().find(c => c.id === reportCarId);
+  if (!car) { backHome(); return; }
+
+  const reminders = DB.getReminders(reportCarId);
+
+  // جمع‌آوری همه رکوردهای تاریخی
+  const allRecords = [];
+  reminders.forEach(r => {
+    if (r.history && r.history.length > 0) {
+      r.history.forEach(h => {
+        allRecords.push({
+          title: r.title,
+          date: h.date,
+          km: h.km,
+          cost: h.cost || 0,
+          note: h.note
+        });
+      });
+    } else if (r.cost) {
+      // اگه history نداره ولی هزینه داره، یه رکورد از lastService می‌سازیم
+      allRecords.push({
+        title: r.title,
+        date: r.lastServiceDate || '-',
+        km: r.lastServiceKm || '-',
+        cost: r.cost,
+        note: r.note
+      });
+    }
+  });
+
+  allRecords.sort((a, b) => {
+    const da = jalaliToDate(a.date);
+    const db = jalaliToDate(b.date);
+    if (!da && !db) return 0;
+    if (!da) return 1;
+    if (!db) return -1;
+    return db - da;
+  });
+
+  const totalCost = allRecords.reduce((s, r) => s + (r.cost || 0), 0);
+  const totalCount = allRecords.length;
+
+  document.getElementById('app').innerHTML = `
+    <div class="report-header no-print">
+      <h3>📊 گزارش هزینه‌ها — ${car.name}</h3>
+      <div class="date-row">
+        <div class="field">
+          <label>از تاریخ (شمسی)</label>
+          <input id="fromDate" placeholder="۱۴۰۵/۰۱/۰۱">
+        </div>
+        <div class="field">
+          <label>تا تاریخ (شمسی)</label>
+          <input id="toDate" placeholder="${todayJalali()}">
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn small secondary" onclick="applyFilter()">اعمال فیلتر</button>
+        <button class="btn small secondary" onclick="clearFilter()">پاک کردن</button>
+      </div>
+    </div>
+
+    <div id="reportContent"></div>
+
+    <div class="btn-row no-print">
+      <button class="btn secondary" onclick="backHome()">بازگشت</button>
+      <button class="btn orange" onclick="window.print()">🖨 پرینت فاکتور</button>
+    </div>
+  `;
+
+  window._allRecords = allRecords;
+  renderReportContent(allRecords, car, '', '');
+}
+
+function applyFilter() {
+  const from = document.getElementById('fromDate').value.trim();
+  const to = document.getElementById('toDate').value.trim();
+  const car = DB.getCars().find(c => c.id === reportCarId);
+
+  let records = window._allRecords || [];
+  if (from) {
+    const fd = jalaliToDate(from);
+    if (fd) records = records.filter(r => {
+      const d = jalaliToDate(r.date);
+      return d && d >= fd;
+    });
+  }
+  if (to) {
+    const td = jalaliToDate(to);
+    if (td) {
+      td.setHours(23, 59, 59, 999);
+      records = records.filter(r => {
+        const d = jalaliToDate(r.date);
+        return d && d <= td;
+      });
+    }
+  }
+  renderReportContent(records, car, from, to);
+}
+
+function clearFilter() {
+  document.getElementById('fromDate').value = '';
+  document.getElementById('toDate').value = '';
+  const car = DB.getCars().find(c => c.id === reportCarId);
+  renderReportContent(window._allRecords || [], car, '', '');
+}
+
+function renderReportContent(records, car, from, to) {
+  const total = records.reduce((s, r) => s + (r.cost || 0), 0);
+
+  const period = (from || to)
+    ? `از ${from || 'ابتدا'} تا ${to || todayJalali()}`
+    : `کل دوره`;
+
+  document.getElementById('reportContent').innerHTML = `
+    <div class="invoice">
+      <div class="invoice-head">
+        <h2>🚗 ماشین‌یار</h2>
+        <p>فاکتور هزینه‌های خودرو</p>
+      </div>
+
+      <div class="invoice-info">
+        <div>
+          <div class="lbl">خودرو</div>
+          <div class="val">${car.name}</div>
+        </div>
+        <div>
+          <div class="lbl">سال ساخت</div>
+          <div class="val">${car.year}</div>
+        </div>
+        <div>
+          <div class="lbl">دوره</div>
+          <div class="val" style="font-size:11px;">${period}</div>
+        </div>
+      </div>
+
+      ${records.length === 0 ? `
+        <div class="invoice-empty">هیچ هزینه‌ای در این بازه ثبت نشده</div>
+      ` : `
+        <table class="invoice-table">
+          <thead>
+            <tr>
+              <th style="width:30px;">#</th>
+              <th>شرح</th>
+              <th style="width:80px;">تاریخ</th>
+              <th style="width:70px;">کیلومتر</th>
+              <th style="width:90px;">مبلغ</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${records.map((r, i) => `
+              <tr>
+                <td>${faNum(i + 1)}</td>
+                <td>
+                  ${r.title}
+                  ${r.note ? `<div style="font-size:11px;color:#90a4ae;margin-top:2px;">${r.note}</div>` : ''}
+                </td>
+                <td class="num" style="font-size:11px;">${r.date}</td>
+                <td class="num" style="font-size:11px;">${faNum(r.km)}</td>
+                <td class="num">${faNum(r.cost)}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+
+        <div class="invoice-total">
+          <span>جمع کل (${faNum(records.length)} مورد)</span>
+          <span>${faNum(total)} تومان</span>
+        </div>
+      `}
+
+      <div style="text-align:center;font-size:11px;color:#90a4ae;margin-top:16px;">
+        صادر شده در ${todayJalali()} — ماشین‌یار
+      </div>
+    </div>
+  `;
+}
+
+// ==================== نوتیفیکیشن ====================
+function checkRemindersForCar(car) {
+  if (!('Notification' in window) || Notification.permission !== 'granted') return;
+  DB.getReminders(car.id).forEach(r => {
+    const s = getStatus(r, car.currentKm);
+    if (s === 'passed') {
+      showNotif(`⛔ ${r.title} عقب افتاده`, `برای ${car.name} سرویس ${r.title} از موعد گذشته است`);
+    } else if (s === 'soon') {
+      showNotif(`🔔 ${r.title} نزدیک است`, `برای ${car.name} سرویس ${r.title} به‌زودی سر می‌رسد`);
+    }
+  });
+}
+
+function showNotif(title, body) {
+  try {
+    new Notification(title, {
+      body,
+      icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="75" font-size="75">🚗</text></svg>',
+      tag: 'mashin-yar-' + Date.now()
+    });
+  } catch (e) {}
+}
+
+function checkAllReminders() {
+  if (!('Notification' in window) || Notification.permission !== 'granted') return;
+  const cars = DB.getCars();
+  let count = 0;
+  cars.forEach(car => {
+    DB.getReminders(car.id).forEach(r => {
+      const s = getStatus(r, car.currentKm);
+      if (s === 'passed' || s === 'soon') count++;
+    });
+  });
+  if (count > 0) {
+    setTimeout(() => showNotif('🚗 ماشین‌یار', `${count} سرویس نیاز به بررسی دارد`), 1500);
+  }
+}
+
+// ==================== شروع ====================
+render();
+checkAllReminders();
+</script>
+</body>
+</html>
